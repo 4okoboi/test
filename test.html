@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+<head>
+    <title>Страница регистрации</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333333;
+        }
+
+        form {
+            width: 300px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333333;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #cccccc;
+            border-radius: 3px;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #4caf50;
+            color: #ffffff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Регистрация</h1>
+    <form id="registration-form">
+        <label for="username">Имя пользователя:</label>
+        <input type="text" id="username" name="username" required><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br>
+
+        <label for="password">Пароль:</label>
+        <input type="password" id="password" name="password" required><br>
+
+        <button type="submit">Зарегистрироваться</button>
+    </form>
+
+    <script>
+        document.getElementById("registration-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            var username = document.getElementById("username").value;
+            var email = document.getElementById("email").value;
+            var password = document.getElementById("password").value;
+
+            var request = new XMLHttpRequest();
+            request.open("POST", "http://212.193.63.88:3000/api/user/register", true);
+            request.setRequestHeader("Content-Type", "application/json");
+
+            var requestBody = JSON.stringify({
+                "username": username,
+                "email": email,
+                "password": password
+            });
+
+            request.onreadystatechange = function() {
+                if (request.readyState === 4 && request.status === 200) {
+                    var response = JSON.parse(request.responseText);
+                    if (response.success) {
+                        alert("Регистрация прошла успешно");
+                    } else {
+                        alert("Ошибка регистрации: " + response.message);
+                    }
+                }
+            };
+
+            request.send(requestBody);
+        });
+    </script>
+</body>
+</html>
