@@ -1,15 +1,19 @@
+import os
+
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api, reqparse
-from db import create_session, User, global_init, Token
+from db import create_session, User, global_init, Packet
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 import re
 
-from resources.token_resources import GetLastFreeToken, BuyToken, GetSumTokens
-from resources.user_resources import UserRegistration, UserLogin, UserUpdate, UserSelf
+from resources.investment_resources import GetPacketsList, BuyPacket
+from resources.transaction_resources import TransactionCreateTopup, TransactionCommitTopup, TransactionGetTopup
+from resources.user_resources import UserRegistration, UserLogin, UserUpdate, UserSelf, GetUserInvestments
 from flask_cors import CORS
 
 app = Flask(__name__)
 api = Api(app)
+
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Настройка JWT для аутентификации
@@ -39,13 +43,16 @@ api.add_resource(UserRegistration, '/api/user/register')
 api.add_resource(UserLogin, '/api/user/login')
 api.add_resource(UserUpdate, '/api/user/update/')
 api.add_resource(UserSelf, '/api/user/self')
+api.add_resource(GetUserInvestments, '/api/user/packets')
 
-api.add_resource(BuyToken, '/api/token/buy')
-api.add_resource(GetLastFreeToken, '/api/token/last')
-api.add_resource(GetSumTokens, '/api/token/price')
+api.add_resource(TransactionCreateTopup, '/api/transaction/create/topup')
+api.add_resource(TransactionCommitTopup, '/api/transaction/commit/topup')
+api.add_resource(TransactionGetTopup, '/api/transaction/get/topup')
 
-#
-# def runserver():
-#     if __name__ == '__main__':
-#         global_init('sqlite:///users.sqlite')
-#         app.run(debug=True, host='127.0.0.1', port=3000)
+api.add_resource(GetPacketsList, '/api/packet/all')
+api.add_resource(BuyPacket, '/api/packet/buy')
+
+if __name__ == '__main__':
+    global_init('sqlite:///users.sqlite')
+
+    app.run(debug=True, host='127.0.0.1', port=os.environ.get('PORT', '3000'))
